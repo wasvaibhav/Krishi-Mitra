@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🌾 कृषि मित्र - फसल बेचें</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Arial, sans-serif;
+      /* green overlay + grain photo background */
+      background-image:
+        linear-gradient(rgba(232,248,233,0.95), rgba(200,230,201,0.95)),
+        url('https://upload.wikimedia.org/wikipedia/commons/5/57/Wheat_field_in_Haryana.jpg');
+      background-repeat:no-repeat;
+      background-position:center bottom;
+      background-size:cover;
+      color:#1b5e20;
+      min-height:100vh;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background: linear-gradient(90deg,#2e7d32,#1b5e20);
+      color:#fff;
+      padding:14px 18px;
+      font-size:20px;
+      font-weight:700;
+      box-shadow:0 6px 18px rgba(18,94,30,0.12);
+    }
+    header button{
+      margin-right:6px;
+      background:rgba(255,255,255,0.95);
+      color:#1b5e20;
+      border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;
+      box-shadow:0 2px 6px rgba(0,0,0,0.12)
+    }
+    header .grain-icon{
+      width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);
+      box-shadow:0 2px 6px rgba(0,0,0,0.15)
+    }
+
+    main{max-width:1000px;margin:20px auto;padding:0 16px}
+    .card{
+      background: rgba(255,255,255,0.98);
+      padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,96,38,0.06);margin-bottom:22px;
+      border:1px solid rgba(34,139,34,0.06)
+    }
+
+    label{display:block;font-weight:700;margin-top:12px;color:#145a32}
+    input,select{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #cfe6d1;font-size:16px;background:#f8fff8;color:#073b1a}
+    .btn{background:#2e7d32;color:#fff;border:none;padding:12px;border-radius:10px;cursor:pointer;margin-top:14px;font-weight:800;transition:all .18s}
+    .btn:hover{background:#1b5e20;transform:translateY(-1px)}
+    .btn-photo{width:48%;margin-right:4%;text-align:center}
+    .photo-buttons{display:flex;margin-top:12px}
+    .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:16px}
+    .product-card{background:#fff;border-radius:10px;box-shadow:0 6px 16px rgba(16,121,64,0.06);padding:12px;text-align:center;border:1px solid rgba(34,139,34,0.04)}
+    .product-card img{width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px}
+    .product-card h3{font-size:18px;margin-bottom:6px;color:#2e7d32}
+    .product-card p{font-size:14px;color:#2b5b38;margin:2px 0}
+    .market-price{color:#1b5e20;font-weight:800}
+    .small-note{font-size:13px;color:#2e7d32;margin-top:6px}
+    input[type="file"]{display:none}
+
+    /* Webcam area + preview */
+    #cameraArea{display:none;text-align:center;margin-top:10px}
+    #video{max-width:100%;border:2px solid rgba(46,125,50,0.08);border-radius:8px}
+    #photoPreview{display:none;margin-top:10px;max-width:100%;border:2px dashed rgba(34,139,34,0.15);border-radius:8px}
+
+    /* Tiny toast */
+    #toast{visibility:hidden;min-width:220px;max-width:90%;background:#264d2f;color:#fff;text-align:center;border-radius:8px;padding:10px 14px;position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;font-size:14px}
+    #toast.show{visibility:visible;animation:fadein .25s, fadeout .25s 2.1s}
+    @keyframes fadein{from{opacity:0;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @keyframes fadeout{from{opacity:1}to{opacity:0}}
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="history.back()">← Back</button>
+    <!-- small grain photo in the header -->
+    <img class="grain-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/57/Wheat_field_in_Haryana.jpg" alt="Grain photo">
+    🌾 कृषि मित्र - फसल बेचें
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>अपनी फसल बेचें</h2>
+      <div class="small-note">फसल का चयन करें, तस्वीर अपलोड करें या कैमरा से क्लिक करें और कीमत दर्ज करें।</div>
+
+      <label for="crop">फसल चुनें</label>
+      <select id="crop">
+        <option value="">-- चुनें --</option>
+        <option value="wheat">गेहूँ</option>
+        <option value="rice">धान</option>
+        <option value="maize">मक्का</option>
+        <option value="cotton">कपास</option>
+        <option value="sugarcane">गन्ना</option>
+        <option value="mustard">सरसों</option>
+        <option value="pulses">दालें</option>
+        <option value="vegetables">सब्ज़ियाँ</option>
+      </select>
+
+      <label for="quantity">मात्रा</label>
+      <input type="number" id="quantity" placeholder="उदाहरण: 100" min="0">
+
+      <label for="unit">इकाई</label>
+      <select id="unit">
+        <option value="kg">किलो</option>
+        <option value="quintal">क्विंटल</option>
+        <option value="ton">टन</option>
+      </select>
+
+      <label for="price">आपकी कीमत (₹ प्रति यूनिट)</label>
+      <input type="number" id="price" placeholder="उदाहरण: 20" min="0">
+
+      <div class="small-note" id="marketPriceText">सुझावित बाजार कीमत: —</div>
+
+      <!-- Camera / Gallery buttons -->
+      <div class="photo-buttons">
+        <button type="button" class="btn btn-photo" onclick="openCamera()">📷 कैमरा</button>
+        <label for="galleryInput" class="btn btn-photo">🖼 गैलरी</label>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="cameraInput" accept="image/*" capture="environment">
+      <input type="file" id="galleryInput" accept="image/*">
+
+      <!-- Desktop webcam area -->
+      <div id="cameraArea">
+        <video id="video" autoplay playsinline></video><br>
+        <button type="button" class="btn" id="captureBtn" onclick="capturePhoto()">📸 कैप्चर करें</button>
+        <button type="button" class="btn" id="retakeBtn" style="display:none;margin-top:8px;background:#607d8b">🔁 फिर से लें</button>
+        <canvas id="canvas" style="display:none;"></canvas>
+      </div>
+
+      <!-- Live preview once a photo is attached (if form incomplete) -->
+      <img id="photoPreview" alt="तस्वीर प्रीव्यू">
+
+      <button class="btn" onclick="addProduct()">फसल लिस्ट करें</button>
+    </div>
+
+    <h2>आपकी सूचीबद्ध फसलें</h2>
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    /* -------------------------
+       Config / Data
+       ------------------------- */
+    const MARKET_PRICES = { wheat:22, rice:25, maize:20, cotton:150, sugarcane:4, mustard:30, pulses:50, vegetables:40 };
+    const CROP_NAMES = { wheat:'गेहूँ', rice:'धान', maize:'मक्का', cotton:'कपास', sugarcane:'गन्ना', mustard:'सरसों', pulses:'दालें', vegetables:'सब्ज़ियाँ' };
+
+    /* -------------------------
+       Elements
+       ------------------------- */
+    const productGrid   = document.getElementById('productGrid');
+    const marketPriceText= document.getElementById('marketPriceText');
+    const cameraInput   = document.getElementById('cameraInput');
+    const galleryInput  = document.getElementById('galleryInput');
+    const cameraArea    = document.getElementById('cameraArea');
+    const video         = document.getElementById('video');
+    const canvas        = document.getElementById('canvas');
+    const photoPreview  = document.getElementById('photoPreview');
+    const toastEl       = document.getElementById('toast');
+    const retakeBtn     = document.getElementById('retakeBtn');
+
+    let selectedFile = null;        // currently attached file (not yet consumed)
+    let autoListingLock = false;    // debounce guard
+    let currentStream = null;
+
+    /* -------------------------
+       UI Helpers
+       ------------------------- */
+    function showToast(msg){
+      toastEl.textContent = msg;
+      toastEl.className = 'show';
+      setTimeout(()=> toastEl.className = toastEl.className.replace('show',''), 2500);
+    }
+
+    function fieldsFilled(){
+      const crop = document.getElementById('crop').value.trim();
+      const quantity = document.getElementById('quantity').value;
+      const price = document.getElementById('price').value;
+      return crop !== '' && quantity !== '' && price !== '' && Number(quantity) > 0 && Number(price) > 0;
+    }
+
+    function maybeAutoList(){
+      if(!selectedFile) return;
+      if(!fieldsFilled()) return;
+      if(autoListingLock) return;
+      autoListingLock = true;
+      setTimeout(()=>{
+        addProduct();
+        showToast('✅ तस्वीर अपलोड होकर लिस्ट हो गई');
+        autoListingLock = false;
+      }, 120);
+    }
+
+    function attachImageAndMaybeList(file){
+      if(!file) return;
+      selectedFile = file;
+
+      // show preview
+      const r = new FileReader();
+      r.onload = (e)=>{
+        photoPreview.src = e.target.result;
+        photoPreview.style.display = 'block';
+      };
+      r.readAsDataURL(file);
+
+      // reset file inputs so same file can be selected again later
+      cameraInput.value = '';
+      galleryInput.value = '';
+
+      // If all fields already filled, list; else show toast and wait for fields
+      if(fieldsFilled()){
+        maybeAutoList(); // will add product
+      } else {
+        showToast('📌 तस्वीर जुड़ गई — पहले विवरण भरें');
+      }
+    }
+
+    /* -------------------------
+       File input events (mobile / gallery)
+       ------------------------- */
+    cameraInput.addEventListener('change', (e)=> {
+      if(e.target.files && e.target.files[0]) attachImageAndMaybeList(e.target.files[0]);
+    });
+    galleryInput.addEventListener('change', (e)=> {
+      if(e.target.files && e.target.files[0]) attachImageAndMaybeList(e.target.files[0]);
+    });
+
+    /* -------------------------
+       Market price dynamic text
+       ------------------------- */
+    document.getElementById('crop').addEventListener('change', function(){
+      const crop = this.value;
+      marketPriceText.textContent = MARKET_PRICES[crop] ? `सुझावित बाजार कीमत: ₹${MARKET_PRICES[crop]} प्रति किलो` : 'सुझावित बाजार कीमत: —';
+      maybeAutoList();
+    });
+
+    /* listen numeric inputs so if user fills after capture we auto-list */
+    ['quantity','price'].forEach(id=>{
+      document.getElementById(id).addEventListener('input', maybeAutoList);
+    });
+
+    /* -------------------------
+       Webcam (desktop) logic
+       ------------------------- */
+    async function openCamera(){
+      try{
+        if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) throw new Error('getUserMedia unsupported');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        currentStream = stream;
+        video.srcObject = stream;
+        cameraArea.style.display = 'block';
+        photoPreview.style.display = 'none';
+        retakeBtn.style.display = 'none';
+      }catch(err){
+        // fallback for devices without webcam permission -> open native camera/file picker
+        cameraInput.click();
+      }
+    }
+
+    function stopCamera(){
+      if(currentStream){
+        currentStream.getTracks().forEach(t => t.stop());
+        currentStream = null;
+      }
+      video.srcObject = null;
+      cameraArea.style.display = 'none';
+    }
+
+    /* Capture frame, convert to JPEG File and attach */
+    function capturePhoto(){
+      // ensure video has dimensions
+      const vw = video.videoWidth || 1280;
+      const vh = video.videoHeight || 720;
+      const maxW = 1280;
+      const scale = Math.min(1, maxW / vw);
+      const w = Math.round(vw * scale);
+      const h = Math.round(vh * scale);
+
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, w, h);
+
+      // compress to jpeg
+      canvas.toBlob((blob)=>{
+        if(!blob){ showToast('⚠ फोटो कैप्चर विफल'); return; }
+        const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+
+        // stop stream and hide webcam
+        stopCamera();
+
+        // attach file & maybe auto-list
+        attachImageAndMaybeList(file);
+
+        // show a retake option (user can click camera button again to retake)
+        retakeBtn.style.display = 'inline-block';
+      }, 'image/jpeg', 0.9);
+    }
+
+    /* Retake handler */
+    retakeBtn.addEventListener('click', ()=>{
+      selectedFile = null;
+      photoPreview.src = '';
+      photoPreview.style.display = 'none';
+      retakeBtn.style.display = 'none';
+      openCamera();
+    });
+
+    /* -------------------------
+       Add product card (consumes selectedFile)
+       ------------------------- */
+    function addProduct(){
+      const crop = document.getElementById('crop').value;
+      const quantity = document.getElementById('quantity').value;
+      const unit = document.getElementById('unit').value;
+      const price = document.getElementById('price').value;
+
+      if(!crop || !quantity || !unit || !price || !selectedFile){
+        alert('कृपया सभी विवरण भरें और तस्वीर जोड़ें।');
+        return false;
+      }
+
+      // consume the file immediately to avoid duplicate listing windows
+      const fileToUse = selectedFile;
+      selectedFile = null;
+
+      // reader to convert file -> dataURL for <img>
+      const reader = new FileReader();
+      reader.onload = function(e){
+        const imgSrc = e.target.result;
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${imgSrc}" alt="${CROP_NAMES[crop]}">
+          <h3>${CROP_NAMES[crop]}</h3>
+          <p>मात्रा: ${quantity} ${unit}</p>
+          <p>आपकी कीमत: ₹${price} प्रति ${unit}</p>
+          <p class="market-price">सुझावित बाजार कीमत: ₹${MARKET_PRICES[crop]} प्रति किलो</p>
+        `;
+        productGrid.prepend(card);
+
+        // Reset form (safe reset)
+        document.getElementById('crop').value = '';
+        document.getElementById('quantity').value = '';
+        document.getElementById('unit').value = 'kg';
+        document.getElementById('price').value = '';
+        marketPriceText.textContent = 'सुझावित बाजार कीमत: —';
+
+        // Clear UI preview & file inputs
+        photoPreview.src = '';
+        photoPreview.style.display = 'none';
+        cameraInput.value = '';
+        galleryInput.value = '';
+        retakeBtn.style.display = 'none';
+      };
+      reader.readAsDataURL(fileToUse);
+      return true;
+    }
+  </script>
+</body>
+</html>
