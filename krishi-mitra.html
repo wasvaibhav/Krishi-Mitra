@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Mitra - AI Farmer Advisory System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4CAF50;
+            --secondary: #FF9800;
+            --light: #f5f5f5;
+            --dark: #333;
+            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2e7d32, #4caf50);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            background: white;
+        }
+        
+        .hero {
+            background: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&h=500&q=80') no-repeat center center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            background: rgba(46, 125, 50, 0.85);
+            padding: 30px;
+            max-width: 600px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .hero h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #f57c00;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            background: #4caf50;
+            color: white;
+            font-size: 24px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .feature-content {
+            padding: 20px;
+        }
+        
+        .feature-content h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .fertilizer-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .fertilizer-btn:hover {
+            background-color: #388E3C;
+        }
+        
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .crop-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .crop-icon {
+            font-size: 3rem;
+            margin-right: 20px;
+            color: var(--primary);
+        }
+        
+        .fertilizer-ratio {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ratio-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .ratio-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .recommendation {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--secondary);
+        }
+        
+        .voice-assistant {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .voice-btn {
+            background: #2196f3;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            cursor: pointer;
+            color: white;
+            font-size: 24px;
+            border: none;
+            transition: background 0.3s;
+        }
+        
+        .voice-btn:hover {
+            background: #1976d2;
+        }
+        
+        .app-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 40px 0;
+        }
+        
+        .app-screenshot {
+            max-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-screenshot img {
+            width: 100%;
+            display: block;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 30px 0 20px;
+            color: #2e7d32;
+            font-size: 28px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                height: auto;
+            }
+            
+            .hero-content {
+                border-radius: 0;
+            }
+            
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .form-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [language, setLanguage] = useState('en');
+            const [isListening, setIsListening] = useState(false);
+            const [activeTab, setActiveTab] = useState('home');
+            
+            const languages = [
+                { code: 'en', name: 'English' },
+                { code: 'hi', name: 'Hindi' },
+                { code: 'ta', name: 'Tamil' },
+                { code: 'te', name: 'Telugu' },
+                { code: 'bn', name: 'Bengali' },
+                { code: 'mr', name: 'Marathi' }
+            ];
+            
+            const features = [
+                {
+                    icon: 'fas fa-seedling',
+                    title: 'Crop Advisory',
+                    description: 'Get AI-powered recommendations for crop selection based on soil type, weather conditions, and market trends.'
+                },
+                {
+                    icon: 'fas fa-bug',
+                    title: 'Pest Detection',
+                    description: 'Upload images of affected crops to identify pests and diseases and get treatment recommendations.'
+                },
+                {
+                    icon: 'fas fa-cloud-sun-rain',
+                    title: 'Weather Alerts',
+                    description: 'Receive real-time weather forecasts and alerts to protect your crops from adverse conditions.'
+                },
+                {
+                    icon: 'fas fa-flask',
+                    title: 'Soil Health',
+                    description: 'Get personalized fertilizer recommendations based on your soil health card data.'
+                },
+                {
+                    icon: 'fas fa-rupee-sign',
+                    title: 'Market Prices',
+                    description: 'Track real-time market prices for your produce and get advice on best selling times.'
+                },
+                {
+                    icon: 'fas fa-mobile-alt',
+                    title: 'Voice Support',
+                    description: 'Use voice commands in your local language for easy access to all features.'
+                }
+            ];
+            
+            const toggleVoiceAssistant = () => {
+                setIsListening(!isListening);
+            };
+            
+            const FertilizerAdvisor = () => {
+                const [crop, setCrop] = useState('');
+                const [soilType, setSoilType] = useState('');
+                const [result, setResult] = useState(null);
+                
+                const fertilizerData = {
+                    wheat: {
+                        loamy: { n: '120 kg/ha', p: '60 kg/ha', k: '40 kg/ha', recommendation: 'For wheat in loamy soil, apply Nitrogen in two split doses - half at sowing and half at first irrigation. Phosphorus and Potassium should be applied fully at sowing time.' },
+                        sandy: { n: '100 kg/ha', p: '50 kg/ha', k: '50 kg/ha', recommendation: 'For wheat in sandy soil, apply Nitrogen in three split doses. Use slow-release nitrogen fertilizers to prevent leaching.' },
+                        clay: { n: '140 kg/ha', p: '70 kg/ha', k: '30 kg/ha', recommendation: 'For wheat in clay soil, apply Phosphorus in bands near the root zone for better availability. Nitrogen should be applied in split doses.' }
+                    },
+                    rice: {
+                        loamy: { n: '150 kg/ha', p: '70 kg/ha', k: '60 kg/ha', recommendation: 'For rice in loamy soil, apply Nitrogen in three equal splits - at transplanting, tillering, and panicle initiation stage.' },
+                        sandy: { n: '130 kg/ha', p: '60 kg/ha', k: '70 kg/ha', recommendation: 'For rice in sandy soil, use controlled-release nitrogen fertilizers to minimize losses. Split application of Nitrogen is essential.' },
+                        clay: { n: '160 kg/ha', p: '80 kg/ha', k: '50 kg/ha', recommendation: 'For rice in clay soil, ensure proper water management. Apply Zinc sulfate at 25 kg/ha if deficiency is observed.' }
+                    },
+                    cotton: {
+                        loamy: { n: '100 kg/ha', p: '50 kg/ha', k: '50 kg/ha', recommendation: 'For cotton in loamy soil, apply Nitrogen in three splits - at sowing, squaring, and flowering stages. Foliar application of Potassium during boll development is beneficial.' },
+                        sandy: { n: '90 kg/ha', p: '45 kg/ha', k: '60 kg/ha', recommendation: 'For cotton in sandy soil, use drip irrigation with fertigation for better nutrient use efficiency. Split Nitrogen application is crucial.' },
+                        clay: { n: '110 kg/ha', p: '55 kg/ha', k: '40 kg/ha', recommendation: 'For cotton in clay soil, ensure proper drainage. Apply Boron at 0.5 kg/ha if deficiency symptoms appear.' }
+                    },
+                    maize: {
+                        loamy: { n: '130 kg/ha', p: '65 kg/ha', k: '45 kg/ha', recommendation: 'For maize in loamy soil, apply Nitrogen in two splits - half at sowing and half at knee-high stage. Use starter dose of Phosphorus for better growth.' },
+                        sandy: { n: '110 kg/ha', p: '55 kg/ha', k: '55 kg/ha', recommendation: 'For maize in sandy soil, apply nutrients in multiple splits. Use organic manures to improve soil water holding capacity.' },
+                        clay: { n: '140 kg/ha', p: '70 kg/ha', k: '35 kg/ha', recommendation: 'For maize in clay soil, ridge planting is recommended for better drainage. Apply Zinc if deficiency is observed.' }
+                    },
+                    sugarcane: {
+                        loamy: { n: '200 kg/ha', p: '80 kg/ha', k: '100 kg/ha', recommendation: 'For sugarcane in loamy soil, apply Nitrogen in three splits - at planting, 45 days after planting, and 90 days after planting. Use organic manures for sustainable production.' },
+                        sandy: { n: '180 kg/ha', p: '70 kg/ha', k: '110 kg/ha', recommendation: 'For sugarcane in sandy soil, fertigation is recommended for better nutrient use efficiency. Mulching helps in moisture conservation.' },
+                        clay: { n: '220 kg/ha', p: '90 kg/ha', k: '90 kg/ha', recommendation: 'For sugarcane in clay soil, ensure proper drainage. Apply Silicon fertilizers for improved pest and disease resistance.' }
+                    },
+                    potato: {
+                        loamy: { n: '120 kg/ha', p: '100 kg/ha', k: '120 kg/ha', recommendation: 'For potato in loamy soil, apply well-decomposed farmyard manure before planting. Higher Potassium application improves tuber quality and yield.' },
+                        sandy: { n: '100 kg/ha', p: '80 kg/ha', k: '140 kg/ha', recommendation: 'For potato in sandy soil, use drip irrigation with fertigation. Split application of nutrients is essential for better uptake.' },
+                        clay: { n: '140 kg/ha', p: '120 kg/ha', k: '100 kg/ha', recommendation: 'For potato in clay soil, ridge planting is essential for proper tuber development. Ensure adequate Magnesium supply for better yields.' }
+                    }
+                };
+                
+                const iconMap = {
+                    wheat: '🌾',
+                    rice: '🌾',
+                    cotton: '🧵',
+                    maize: '🌽',
+                    sugarcane: '🎋',
+                    potato: '🥔'
+                };
+                
+                const calculateRecommendation = () => {
+                    if (!crop || !soilType) {
+                        alert('Please select both crop and soil type');
+                        return;
+                    }
+                    
+                    const data = fertilizerData[crop][soilType];
+                    setResult({
+                        crop,
+                        soilType,
+                        data,
+                        icon: iconMap[crop]
+                    });
+                };
+                
+                return (
+                    <div className="card">
+                        <h2 style={{marginBottom: '20px', color: '#2e7d32'}}>Fertilizer Advisor</h2>
+                        <div className="form-container">
+                            <div className="form-group">
+                                <label htmlFor="crop-select">Select Crop</label>
+                                <select 
+                                    id="crop-select" 
+                                    value={crop} 
+                                    onChange={(e) => setCrop(e.target.value)}
+                                >
+                                    <option value="">-- Select a crop --</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="sugarcane">Sugarcane</option>
+                                    <option value="potato">Potato</option>
+                                </select>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="soil-type">Soil Type</label>
+                                <select 
+                                    id="soil-type" 
+                                    value={soilType} 
+                                    onChange={(e) => setSoilType(e.target.value)}
+                                >
+                                    <option value="">-- Select soil type --</option>
+                                    <option value="loamy">Loamy</option>
+                                    <option value="sandy">Sandy</option>
+                                    <option value="clay">Clay</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button className="fertilizer-btn" onClick={calculateRecommendation}>
+                            Get Fertilizer Recommendation
+                        </button>
+                        
+                        {result && (
+                            <div className="result" style={{display: 'block'}}>
+                                <div className="crop-info">
+                                    <div className="crop-icon">{result.icon}</div>
+                                    <div>
+                                        <h2>{result.crop.charAt(0).toUpperCase() + result.crop.slice(1)}</h2>
+                                        <p>Soil Type: {result.soilType.charAt(0).toUpperCase() + result.soilType.slice(1)}</p>
+                                    </div>
+                                </div>
+                                
+                                <h3>Recommended Fertilizer Ratio (NPK)</h3>
+                                <div className="fertilizer-ratio">
+                                    <div className="ratio-card">
+                                        <h4>Nitrogen (N)</h4>
+                                        <div className="ratio-value">{result.data.n}</div>
+                                    </div>
+                                    <div className="ratio-card">
+                                        <h4>Phosphorus (P₂O₅)</h4>
+                                        <div className="ratio-value">{result.data.p}</div>
+                                    </div>
+                                    <div className="ratio-card">
+                                        <h4>Potassium (K₂O)</h4>
+                                        <div className="ratio-value">{result.data.k}</div>
+                                    </div>
+                                </div>
+                                
+                                <div className="recommendation">
+                                    <h3>Recommendation</h3>
+                                    <p>{result.data.recommendation}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+            
+            return (
+                <div>
+                    <header>
+                        <div className="container header-content">
+                            <div className="logo">
+                                <i className="fas fa-leaf"></i>
+                                <h1>Krishi Mitra</h1>
+                            </div>
+                            <nav>
+                                <ul>
+                                    <li><a href="#home" className={activeTab === 'home' ? 'active' : ''} onClick={() => setActiveTab('home')}>Home</a></li>
+                                    <li><a href="#advisory" className={activeTab === 'advisory' ? 'active' : ''} onClick={() => setActiveTab('advisory')}>Advisory</a></li>
+                                    <li><a href="#fertilizer" className={activeTab === 'fertilizer' ? 'active' : ''} onClick={() => setActiveTab('fertilizer')}>Fertilizer</a></li>
+                                    <li><a href="#market">Market</a></li>
+                                    <li><a href="#weather">Weather</a></li>
+                                </ul>
+                            </nav>
+                            <div className="language-selector">
+                                <span>Language:</span>
+                                <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+                                    {languages.map(lang => (
+                                        <option key={lang.code} value={lang.code}>{lang.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <div className="container">
+                        {activeTab === 'home' && (
+                            <div className="tab-content active">
+                                <div className="hero">
+                                    <div className="hero-content">
+                                        <h2>AI-Powered Farming Advisory</h2>
+                                        <p>Get personalized, real-time advice for your crops in your language. Increase yield, reduce costs, and practice sustainable farming.</p>
+                                        <a href="#app" className="btn">Get Started</a>
+                                    </div>
+                                </div>
+                                
+                                <h2 id="features" className="section-title">Key Features</h2>
+                                <div className="features">
+                                    {features.map((feature, index) => (
+                                        <div key={index} className="feature-card">
+                                            <div className="feature-icon">
+                                                <i className={feature.icon}></i>
+                                            </div>
+                                            <div className="feature-content">
+                                                <h3>{feature.title}</h3>
+                                                <p>{feature.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="voice-assistant">
+                                    <h2>Voice Assistant</h2>
+                                    <p>Ask questions in your native language and get immediate advice</p>
+                                    <button className="voice-btn" onClick={toggleVoiceAssistant}>
+                                        <i className={isListening ? 'fas fa-microphone-slash' : 'fas fa-microphone'}></i>
+                                    </button>
+                                    <p>{isListening ? 'Listening... Speak now' : 'Tap to ask a question'}</p>
+                                    {isListening && (
+                                        <div style={{marginTop: '20px'}}>
+                                            <p>Try saying: "What fertilizer should I use for wheat?"</p>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="app-preview">
+                                    <h2 id="app" className="section-title">App Preview</h2>
+                                    <div className="app-screenshot">
+                                        <img src="https://images.unsplash.com/photo-1601333143665-cb9dcffe60c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=500&q=80" alt="Krishi Mitra App Preview" />
+                                    </div>
+                                    <p style={{marginTop: '20px', textAlign: 'center'}}>
+                                        Our mobile app is designed for low literacy users with voice support and simple navigation.
+                                    </p>
+                                    <a href="#download" className="btn" style={{marginTop: '20px'}}>Download App</a>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {activeTab === 'fertilizer' && (
+                            <div className="tab-content active">
+                                <h2 className="section-title">Punjab Crop Fertilizer Advisor</h2>
+                                <p style={{textAlign: 'center', marginBottom: '30px'}}>Get expert fertilizer ratio recommendations for your crops</p>
+                                <FertilizerAdvisor />
+                            </div>
+                        )}
+                        
+                        <div className="footer">
+                            <p>Note: These recommendations are general guidelines. Soil testing is recommended for precise fertilizer application.</p>
+                            <p>© 2023 Krishi Mitra - AI Farmer Advisory System</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
