@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>कृषि मित्र — Loading</title>
+    <style>
+      :root {
+        /* Tweak these to match your brand */
+        --bg-deep: #0f5d2f;  /* deep agricultural green */
+        --bg-bright: #1c7c43; /* brighter green for gradient */
+        --text-green: #dbffd6; /* soft, readable green for text */
+        --ring: rgba(255, 255, 255, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Noto Sans Devanagari", "Hind", "Mangal", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg-deep), var(--bg-bright));
+        display: grid;
+        place-items: center;
+        color: var(--text-green);
+        overflow: hidden;
+      }
+
+      .loader {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        place-items: center;
+        isolation: isolate;
+      }
+
+      /* Subtle expanding rings for a premium feel */
+      .loader::before,
+      .loader::after {
+        content: "";
+        position: absolute;
+        width: 28vmin;
+        height: 28vmin;
+        border-radius: 9999px;
+        border: 2px solid var(--ring);
+        animation: ripple 2.8s ease-out infinite;
+      }
+      .loader::after {
+        animation-delay: 0.9s;
+      }
+
+      .title {
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-align: center;
+        line-height: 1.05;
+        font-size: clamp(34px, 10vw, 120px);
+        color: var(--text-green);
+        text-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        animation: zoomOut 2.4s ease-in forwards 0.5s;
+        will-change: transform, opacity;
+      }
+
+      @keyframes zoomOut {
+        0% { transform: scale(1); opacity: 1; }
+        60% { opacity: 0.95; }
+        100% { transform: scale(12); opacity: 0; }
+      }
+
+      @keyframes ripple {
+        0%   { transform: scale(0.6); opacity: 0.7; }
+        70%  { opacity: 0.08; }
+        100% { transform: scale(2.2); opacity: 0; }
+      }
+
+      /* Accessibility: respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .title, .loader::before, .loader::after {
+          animation: none !important;
+        }
+      }
+
+      /* Optional: after the zoom-out, fade the whole screen to transparent */
+      .fade-out {
+        animation: screenFade 0.6s ease-in forwards 2.3s;
+      }
+      @keyframes screenFade {
+        to { opacity: 0; }
+      }
+
+      /* Helper: fallback background color if gradient unsupported */
+      .no-gradient body { background: var(--bg-deep); }
+    </style>
+  </head>
+  <body>
+    <div class="loader fade-out" role="status" aria-live="polite" aria-label="Loading">
+      <div class="title">कृषि मित्र</div>
+    </div>
+
+    <script>
+      const loader = document.querySelector('.loader');
+      loader.addEventListener('animationend', (e) => {
+        if (e.animationName === 'screenFade') {
+          // Redirect to signup page after fade-out completes
+          location.href = "signup.html";
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>कृषि मित्र — खाद सलाह (वॉइस + मौसम + राज्य)</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f0fff0;margin:0;color:#1b3a2b}
+    header{background:linear-gradient(90deg,#2e7d32,#4caf50);color:#fff;padding:18px;text-align:center;font-size:22px;font-weight:700}
+    .page{max-width:920px;margin:18px auto;padding:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:14px}
+    label{display:block;font-weight:700;margin-top:10px}
+    select,input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #dcdcdc;font-size:16px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .small{width:140px}
+    .btn{background:#ff9800;color:#fff;border:none;padding:12px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin-top:12px}
+    .btn:hover{background:#f57c00}
+    .mic{width:80px;height:80px;border-radius:50%;background:#2196f3;color:#fff;border:none;font-size:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin:12px auto}
+    .mic.listening{background:#d32f2f}
+    .result{background:#e8f5e9;border-left:6px solid #2e7d32;padding:12px;border-radius:6px;margin-top:12px;font-size:18px}
+    .muted{color:#666;font-size:14px}
+    .inline{display:inline-block;vertical-align:middle}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+    .warn{color:#b00020;font-weight:700}
+    .small-note{font-size:13px;color:#666;margin-top:8px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    td,th{padding:8px;border:1px solid #eee;text-align:left;font-size:15px}
+    .muted-block{background:#fff8e1;padding:10px;border-radius:8px;margin-top:8px;color:#6b4b00}
+    .back-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #ffffff22;
+  color: #fff;
+  border: 1px solid #ffffff44;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.back-btn:hover {
+  background: #ffffff44;
+}
+  </style>
+</head>
+<body>
+<header>
+  🌾 कृषि मित्र — खाद सलाह (वॉइस + मौसम + राज्य)
+  <button class="back-btn" onclick="goBack()">⬅️ Back</button>
+</header>
+
+<main class="page">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:800;font-size:18px">सरल खाद सलाह (भारत) — राज्य आधारित फसल सूची</div>
+        <div class="small-note">पहले राज्य चुनें, फिर क्षेत्र डालें और उस राज्य की सामान्य फसल चुनें — या वॉइस से बताएं।</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="grid">
+      <!-- LEFT: form -->
+      <div>
+        <label for="state">राज्य चुनें</label>
+        <select id="state">
+          <option value="">-- अपना राज्य चुनें --</option>
+          <option value="uttar_pradesh">उत्तर प्रदेश</option>
+          <option value="maharashtra">महाराष्ट्र</option>
+          <option value="bihar">बिहार</option>
+          <option value="west_bengal">पश्चिम बंगाल</option>
+          <option value="madhya_pradesh">मध्य प्रदेश</option>
+          <option value="tamil_nadu">तमिल नाडु</option>
+          <option value="karnataka">कर्नाटक</option>
+          <option value="gujarat">गुजरात</option>
+          <option value="rajasthan">राजस्थान</option>
+          <option value="andhra_pradesh">आंध्र प्रदेश</option>
+          <option value="odisha">ओडिशा</option>
+          <option value="telangana">तेलंगाना</option>
+          <option value="assam">असम</option>
+          <option value="punjab">पंजाब</option>
+          <option value="haryana">हरियाणा</option>
+          <option value="kerala">केरल</option>
+          <option value="jammu_kashmir">जम्मू और कश्मीर</option>
+          <option value="uttarakhand">उत्तराखंड</option>
+          <option value="jharkhand">झारखंड</option>
+          <option value="chhattisgarh">छत्तीसगढ़</option>
+          <option value="himachal_pradesh">हिमाचल प्रदेश</option>
+          <option value="goa">गोवा</option>
+          <option value="manipur">मणिपुर</option>
+          <option value="meghalaya">मेघालय</option>
+          <option value="mizoram">मिजोरम</option>
+          <option value="nagaland">नागरलैंड</option>
+          <option value="tripura">त्रिपुरा</option>
+          <option value="sikkim">सिक्किम</option>
+        </select>
+
+        <label for="crop">फसल चुनें (राज्य के आधार पर लोड होगी)</label>
+        <select id="crop">
+          <option value="">-- पहले राज्य चुनें --</option>
+        </select>
+
+        <label for="area">जमीन की मात्रा</label>
+        <div class="row">
+          <input id="area" type="number" min="0" step="0.01" placeholder="जमीन की संख्या (जैसे 2)">
+          <select id="unit" class="small">
+            <option value="acre">एकड़ (acre)</option>
+            <option value="hectare">हेक्टेयर (hectare)</option>
+            <option value="bigha_punjab">बीघा - Punjab (bigha)</option>
+            <option value="bigha_up">बीघा - UP (bigha)</option>
+            <option value="nali">नाली (nali)</option>
+            <option value="other">अन्य (कस्टम)</option>
+          </select>
+        </div>
+
+        <div id="customRow" style="display:none;margin-top:8px">
+          <label>कस्टम इकाई — 1 यूनिट = कितने एकड़?</label>
+          <input id="customFactor" type="number" step="0.0001" placeholder="उदाहरण: 0.625 (1 bigha = 0.625 acre)">
+          <div class="small-note">यदि बीघा राज्य के अनुसार अलग है तो यहाँ मान डालें, वरना डिफ़ॉल्ट रखें।</div>
+        </div>
+
+        <label for="location">गाँव / शहर / ज़िला (मौसम के लिए)</label>
+        <input id="location" type="text" placeholder="उदाहरण: Nainital">
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <button class="btn col" id="pauseBtn" onclick="toggleSpeech()">⏸️ Pause / Resume</button>
+          <button class="btn col" onclick="calculateAndAdvise()">सलाह दिखाएँ</button>
+          <button class="mic inline" id="micBtn" title="वॉइस इनपुट" onclick="toggleListening()">🎙</button>
+          <button class="btn col" onclick="window.location.href='fasal.html'">फसल बेचें</button>
+          <button class="btn col" onclick="window.location.href='beej.html'">बीज खरीदें</button>
+        </div>
+
+        <div class="small-note">माइक दबाकर बोले — उदाहरण: "गेहूँ 2 बीघा लुधियाना" या "धान 1.5 एकड़ पटना"</div>
+      </div>
+
+      <!-- RIGHT: summary & weather -->
+      <div>
+        <div style="font-weight:800">परिणाम</div>
+        <div id="resultBox" class="card" style="margin-top:10px;padding:12px;background:#fff"></div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:800">मौसम जानकारी</div>
+          <div id="weatherBox" class="card" style="margin-top:10px;padding:12px;background:#fff">कृपया स्थान डालकर सलाह रन करें।</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:800">जानकारी / टिप्स</div>
+    <ul style="margin-top:8px">
+      <li class="small-note">यह सलाह सामान्य अनुशंसाओं पर आधारित है; सटीकता के लिए मिट्टी जाँच और स्थानीय कृषि विभाग से सलाह लें।</li>
+      <li class="small-note">रिफरेंस: सरकारी/ICAR/TNAU/FAO दिशानिर्देशों का सारांश — नीचे संदर्भ दिए गए हैं।</li>
+      <li class="small-note warn">वॉइस मान्यता और आवाज़ ब्राउज़र पर निर्भर करती है — Chrome/Android सबसे अच्छे समर्थन के साथ आता है।</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+const OPENWEATHER_API_KEY = "4f64d2ccccb781c20c8cf78bef334ff3"; // demo key (move server-side in production)
+
+/* ---------------- REFERENCE DATA ----------------
+   STATE_CROPS: top ~10 common crops per state (short list).
+   RATES_PER_HA: Recommended approximate N (kg/ha), P2O5 (kg/ha), K2O (kg/ha).
+   --- These are general RDF / blanket recommendations (zone-specific sources exist).
+   --- Always prefer soil-test (SHC) based doses; these are starting values for the app.
+*/
+const RATES_PER_HA = {
+  wheat:    { name: "गेहूँ", n:120, p:60, k:40 },
+  rice:     { name: "धान", n:150, p:60, k:60 },
+  maize:    { name: "मक्का", n:150, p:60, k:40 },
+  cotton:   { name: "कपास", n:120, p:50, k:60 },
+  sugarcane:{ name: "गन्ना", n:300, p:100, k:150 },
+  mustard:  { name: "सरसों / रापसीड", n:60, p:40, k:40 },
+  pulses:   { name: "दालें (मिश्रित)", n:20, p:40, k:20 },
+  vegetables:{ name: "सब्जियाँ (सामान्य)", n:200, p:100, k:100 },
+  soybean:  { name: "सोयाबीन", n:25, p:80, k:40 },
+  groundnut:{ name: "मूंगफली", n:20, p:40, k:60 },
+  potato:   { name: "आलू", n:150, p:90, k:120 },
+  tea:      { name: "चाय", n:150, p:50, k:150 },
+  coffee:   { name: "कॉफ़ी", n:50, p:20, k:60 },
+  jute:     { name: "जूट", n:60, p:40, k:40 },
+  bajra:    { name: "बाजरा", n:40, p:20, k:20 },
+  sorghum:  { name: "ज्वार / ज्वार", n:80, p:40, k:40 },
+  banana:   { name: "केला", n:300, p:225, k:400 },
+  coconut:  { name: "नारियल", n:300, p:75, k:750 },
+  sesame:   { name: "तिल", n:20, p:40, k:20 },
+  sunflower:{ name: "सूरजमुखी", n:60, p:40, k:20 }
+};
+
+/* State -> list of crop keys (order roughly by importance) */
+const STATE_CROPS = {
+  uttar_pradesh: ['wheat','rice','sugarcane','maize','potato','vegetables','mustard','pulses','cotton','jute'],
+  maharashtra:   ['cotton','soybean','sugarcane','groundnut','maize','wheat','bajra','sorghum','pulses','vegetables'],
+  bihar:         ['rice','wheat','maize','sugarcane','jute','pulses','potato','mustard','vegetables','sesame'],
+  west_bengal:   ['rice','potato','jute','sugarcane','maize','mustard','vegetables','pulses','banana','tea'],
+  madhya_pradesh:['soybean','wheat','pulses','maize','cotton','mustard','groundnut','sorghum','vegetables','potato'],
+  tamil_nadu:    ['rice','sugarcane','cotton','groundnut','banana','vegetables','maize','pulses','tea','coconut'],
+  karnataka:     ['rice','maize','sugarcane','cotton','groundnut','soybean','vegetables','coffee','banana','potato'],
+  gujarat:       ['groundnut','cotton','wheat','maize','pulses','sugarcane','mustard','vegetables','sesame','potato'],
+  rajasthan:     ['wheat','bajra','maize','mustard','pulses','vegetables','groundnut','sorghum','potato','cotton'],
+  andhra_pradesh:['rice','maize','groundnut','cotton','sugarcane','vegetables','soybean','banana','pulses','potato'],
+  odisha:        ['rice','maize','groundnut','pulses','sugarcane','vegetables','jute','banana','mustard','potato'],
+  telangana:     ['paddy','maize','cotton','groundnut','vegetables','sorghum','pulses','sugarcane','soybean','banana'].map(k=>k==='paddy'?'rice':k),
+  assam:         ['rice','tea','jute','pulses','groundnut','vegetables','sugarcane','mustard','banana','potato'],
+  punjab:        ['wheat','rice','cotton','sugarcane','maize','vegetables','potato','mustard','pulses','fruit'].map(k=>k==='fruit'?'banana':k),
+  haryana:       ['wheat','rice','cotton','sugarcane','maize','mustard','vegetables','pulses','potato','groundnut'],
+  kerala:        ['paddy','coconut','rubber','tea','coffee','banana','vegetables','spices','pepper','plantation'].map(k=>{ if(k==='paddy')return 'rice'; if(k==='plantation')return 'coffee'; return k==='coconut'?'coconut':k; }),
+  jammu_kashmir: ['paddy','maize','wheat','saffron','potato','vegetables','fruits','pulses','mustard','alfalfa'].map(k=> k==='paddy'?'rice': (k==='fruits'?'banana':k)),
+  uttarakhand:   ['wheat','paddy','maize','sugarcane','vegetables','potato','pulses','millet','mustard','fruits'].map(k=>k==='paddy'?'rice':(k==='millet'?'bajra':k)),
+  jharkhand:     ['rice','maize','pulses','oilseeds','vegetables','sugarcane','potato','groundnut','jute','fruit'].map(k=>k==='oilseeds'?'groundnut':(k==='fruit'?'banana':k)),
+  chhattisgarh:  ['rice','maize','pulses','sugarcane','vegetables','mustard','groundnut','cotton','jute','potato'],
+  himachal_pradesh:['maize','wheat','apple','potato','vegetables','pulses','oilseeds','tea','mustard','fruit'].map(k=>k==='apple'?'banana':(k==='fruit'?'banana':k)),
+  goa:           ['rice','cashew','coconut','vegetables','banana','arecanut','spices','pulses','groundnut','sugarcane'],
+  manipur:       ['rice','maize','pulses','vegetables','potato','oilseeds','banana','sugarcane','groundnut','tea'],
+  meghalaya:     ['rice','maize','potato','vegetables','pulses','tea','banana','arecanut','rubber','groundnut'],
+  mizoram:       ['rice','maize','pulses','vegetables','banana','potato','tea','groundnut','jute','sugarcane'],
+  nagaland:      ['rice','maize','groundnut','pulses','vegetables','sugarcane','banana','tea','potato','jute'],
+  tripura:       ['rice','maize','sugarcane','rubber','tea','banana','vegetables','pulses','potato','groundnut'],
+  sikkim:        ['paddy','maize','cardamom','potato','vegetables','tea','pulses','fruits','buckwheat','mustard'].map(k=>k==='paddy'?'rice':(k==='fruits'?'banana':k)),
+};
+
+/* ---------------- Unit conversions ---------------- */
+const ACRE_TO_HA = 0.40468564224;
+
+/* ---------------- Helper utilities ---------------- */
+function el(id){ return document.getElementById(id); }
+function showResult(html){ el('resultBox').innerHTML = html; }
+function showWeather(html){ el('weatherBox').innerHTML = html; }
+
+/* ---------------- Populate crops on state change ---------------- */
+const stateSelect = el('state'), cropSelect = el('crop');
+stateSelect.addEventListener('change', ()=>{
+  const st = stateSelect.value;
+  cropSelect.innerHTML = '<option value="">-- फसल चुनें --</option>';
+  if(!st || !STATE_CROPS[st]) return;
+  const list = STATE_CROPS[st];
+  for(const c of list){
+    const key = c.toString();
+    // prefer readable name
+    const label = (RATES_PER_HA[key] && RATES_PER_HA[key].name) ? RATES_PER_HA[key].name : capitalize(key.replace(/_/g,' '));
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.innerText = label;
+    cropSelect.appendChild(opt);
+  }
+});
+
+function goBack(){
+  if(document.referrer){
+    window.history.back();
+  } else {
+    window.location.href = "index.html"; // fallback page if no history
+  }
+}
+
+/* show custom unit row */
+const unitSelect = el('unit'), customRow = el('customRow'), customFactorInput = el('customFactor');
+unitSelect.addEventListener('change', ()=>{
+  if(unitSelect.value === 'other'){
+    customRow.style.display = 'block';
+  } else {
+    customRow.style.display = 'none';
+  }
+});
+
+/* ---------------- Area conversion ---------------- */
+function areaToHectares(value, unit){
+  value = Number(value) || 0;
+  if(unit === 'other'){
+    const f = Number(customFactorInput.value);
+    if(!f || f <= 0) return NaN;
+    // customFactor = acres per unit
+    return value * f * ACRE_TO_HA;
+  }
+  if(unit === 'acre') return value * ACRE_TO_HA;
+  if(unit === 'hectare') return value;
+  if(unit === 'bigha_punjab') return value * 0.625 * ACRE_TO_HA;
+  if(unit === 'bigha_up') return value * 0.25 * ACRE_TO_HA;
+  if(unit === 'nali') return value * 0.025 * ACRE_TO_HA;
+  return NaN;
+}
+
+/* ---------------- Geo + Weather (kept from original) ---------------- */
+async function getLatLonForLocation(location){
+  const q = encodeURIComponent(location + ",IN"); // prefer India
+  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${q}&limit=1&appid=${OPENWEATHER_API_KEY}`;
+  const res = await fetch(url);
+  if(!res.ok) return null;
+  const json = await res.json();
+  if(!json || !json.length) return null;
+  return { lat: json[0].lat, lon: json[0].lon, name: json[0].name, state: json[0].state, country: json[0].country };
+}
+
+async function getForecast(lat, lon){
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=hi`;
+  const res = await fetch(url);
+  if(!res.ok) return null;
+  return res.json();
+}
+
+function findEarliestSafeDate(forecastJson){
+  if(!forecastJson || !forecastJson.list) return { safe: true, date: null, reason: 'Forecast unavailable' };
+  const now = Date.now();
+  const list = forecastJson.list;
+  const horizonMs = 72 * 3600 * 1000;
+  const relevant = list.filter(entry => (entry.dt * 1000) >= now && (entry.dt * 1000) <= (now + horizonMs));
+  function hasRain(entries){
+    for(const e of entries){
+      const main = (e.weather && e.weather[0] && e.weather[0].main) ? e.weather[0].main.toLowerCase() : '';
+      const desc = (e.weather && e.weather[0] && e.weather[0].description) ? e.weather[0].description.toLowerCase() : '';
+      const rainField = e.rain || e.snow;
+      if(main.includes('rain') || main.includes('drizzle') || main.includes('thunderstorm') || desc.includes('rain') || rainField) return true;
+    }
+    return false;
+  }
+  for(let startIdx=0; startIdx<relevant.length; startIdx++){
+    const startTime = relevant[startIdx].dt * 1000;
+    const windowEnd = startTime + (24 * 3600 * 1000);
+    const windowEntries = relevant.filter(e => (e.dt*1000) >= startTime && (e.dt*1000) < windowEnd);
+    if(windowEntries.length === 0) continue;
+    if(!hasRain(windowEntries)){
+      return { safe: true, date: new Date(startTime), reason: 'No rain predicted in 24h window starting' };
+    }
+  }
+  return { safe: false, date: null, reason: 'Rain predicted in near future' };
+}
+
+/* ---------------- Fertilizer calculations ----------------
+   We'll compute:
+     - total N, P2O5, K2O needed = rates * hectares
+     - DAP (kg) = P2O5_needed / 0.46  (DAP ≈ 18% N, 46% P2O5)
+     - N_from_DAP = DAP_kg * 0.18
+     - remaining_N = max(0, totalN - N_from_DAP)
+     - Urea (kg) = remaining_N / 0.46  (Urea ≈ 46% N)
+     - MOP (kg) = K2O_needed / 0.60   (MOP ≈ 60% K2O)
+   Show both nutrient totals and product weights, and organic alternatives.
+*/
+function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
+
+async function calculateAndAdvise(){
+  const stateKey = el('state').value;
+  const cropKey = el('crop').value;
+  const areaVal = Number(el('area').value);
+  const unit = el('unit').value;
+  const location = el('location').value.trim();
+
+  if(!stateKey){ showResult('<div class="warn">कृपया राज्य चुनें</div>'); speakHindi('कृपया राज्य चुनें'); return; }
+  if(!cropKey){ showResult('<div class="warn">कृपया फसल चुनें</div>'); speakHindi('कृपया फसल चुनें'); return; }
+  if(!areaVal || areaVal <=0){ showResult('<div class="warn">कृपया जमीन की सही मात्रा डालें</div>'); speakHindi('कृपया जमीन की सही मात्रा डालें'); return; }
+
+  const ha = areaToHectares(areaVal, unit);
+  if(!ha || isNaN(ha)){ showResult('<div class="warn">कस्टम इकाई का मान सही नहीं है</div>'); speakHindi('कस्टम इकाई का मान सही नहीं है'); return; }
+
+  const rates = RATES_PER_HA[cropKey];
+  if(!rates){ showResult('<div class="warn">इस फसल के लिए डेटा उपलब्ध नहीं है — कृपया मैन्युअल रूप से NPK दर्ज करें</div>'); speakHindi('इस फसल के लिए डेटा उपलब्ध नहीं है'); return; }
+
+  // totals (nutrients)
+  const totalN = rates.n * ha;
+  const totalP = rates.p * ha; // P2O5
+  const totalK = rates.k * ha; // K2O
+
+  // product conversions (typical commercial nutrients)
+  const DAP_P2O5_frac = 0.46; // DAP ≈ 46% P2O5, also contains ~18% N
+  const DAP_N_frac = 0.18;
+  const UREA_N_frac = 0.46;
+  const MOP_K_frac = 0.60;
+
+  const dapKg = totalP / DAP_P2O5_frac;
+  const nFromDap = dapKg * DAP_N_frac;
+  const remainingN = Math.max(0, totalN - nFromDap);
+  const ureaKg = remainingN / UREA_N_frac;
+  const mopKg = totalK / MOP_K_frac;
+
+  // Organic / integrated suggestions (general)
+  // FYM approx nutrient: very low NPK - so recommend tons/ha for integrated plan
+  const fymSuggestion_t_per_ha = 5; // typical integrated suggestion
+  const vermi_t_per_ha = 1; // typical
+  const neemcake_kg_per_ha = 100;
+
+  // Weather (geocode + forecast) - show loading
+  showWeather('मौसम खोजा जा रहा है... कृपया प्रतीक्षा करें।');
+  let geo = null;
+  try{ geo = await getLatLonForLocation(location); } catch(e){ geo = null; }
+  if(!geo){
+    showWeather('स्थान खोजने में समस्या — सीधे शहर/जिला का सटीक नाम डालें (उदा. Ludhiana)');
+  } else {
+    showWeather(`स्थान: ${geo.name || location} ${geo.state ? ' - '+geo.state : ''} (${geo.lat.toFixed(3)},${geo.lon.toFixed(3)}) — भविष्यवाणी लोड हो रही है...`);
+  }
+  let forecast = null;
+  if(geo){
+    try{ forecast = await getForecast(geo.lat, geo.lon); } catch(e){ forecast = null; }
+  }
+  const safeInfo = forecast ? findEarliestSafeDate(forecast) : { safe:true, date:null, reason:'Forecast unavailable' };
+
+  // Compose result
+  const cropName = rates.name || cropKey;
+  const areaText = `${areaVal} ${getUnitLabel(unit)}`;
+  let adviceText = '';
+  if(safeInfo.safe){
+    if(safeInfo.date){
+      const d = safeInfo.date;
+      const dateStr = d.toLocaleDateString('hi-IN', { day:'numeric', month:'short' });
+      adviceText = `मौसम के अनुसार, ${dateStr} से खाद देना सुरक्षित दिखता है।`;
+    } else {
+      adviceText = 'मौसम ठीक है, आप आज खाद दे सकते हैं।';
+    }
+  } else {
+    adviceText = 'नज़दीकी दिनों में बारिश की आशंका है — कृपया बारिश के रुकने के बाद (कम से कम 24 घंटे बाद) खाद दें।';
+  }
+
+  // build HTML
+  let html = `<div style="font-weight:800;margin-bottom:8px">${cropName} — ${areaText}</div>`;
+  html += `<div>कुल क्षेत्र: <strong>${ha.toFixed(3)} हेक्टेयर</strong></div>`;
+
+  html += `<div style="margin-top:8px"><strong>आवश्यक पोषक तत्व (कुल):</strong></div>`;
+  html += `<table><tr><th>पोषक</th><th>कुल मात्रा (kg)</th></tr>`;
+  html += `<tr><td>N (नाइट्रोजन)</td><td>${fmt(totalN)}</td></tr>`;
+  html += `<tr><td>P₂O₅ (फॉस्फेट)</td><td>${fmt(totalP)}</td></tr>`;
+  html += `<tr><td>K₂O (पोटेशियम)</td><td>${fmt(totalK)}</td></tr></table>`;
+
+  html += `<div style="margin-top:8px"><strong>अनुमानित उर्वरक (प्रोडक्ट्स):</strong></div>`;
+  html += `<table><tr><th>उर्वरक</th><th>अनुमानित मात्रा</th><th>नोट</th></tr>`;
+  html += `<tr><td>DAP (18-46-0)</td><td>${fmt(dapKg)} kg</td><td>DAP से P₂O₅ मिलेगा; DAP में ~18% N भी होता है।</td></tr>`;
+  html += `<tr><td>Urea (46-0-0)</td><td>${fmt(ureaKg)} kg</td><td>Urea मुख्य N स्रोत — ऊपर DAP का N घटाने के बाद बचा हुआ N।</td></tr>`;
+  html += `<tr><td>MOP / KCl (~60% K₂O)</td><td>${fmt(mopKg)} kg</td><td>पोटाश के लिए MOP (SOP वैकल्पिक)।</td></tr>`;
+  html += `</table>`;
+
+  html += `<div class="small-note" style="margin-top:8px"><strong>नोट:</strong> ये गणनाएँ सामान्य रूप से NPK की ज़रूरतों को दर्शाती हैं और स्थानीय मिट्टी जाँच (SHC) के अनुसार समायोजित की जानी चाहिए।</div>`;
+
+  html += `<div style="margin-top:8px;font-weight:700;color:#2e7d32">${adviceText}</div>`;
+
+  // organic/integrated suggestions
+  html += `<div style="margin-top:10px"><strong>इंटीग्रेटेड / ऑर्गेनिक सुझाव (सामान्य):</strong>`;
+  html += `<ul><li>FYM/कम्पोस्ट: ~${fymSuggestion_t_per_ha} t/ha (एक्स्ट्रा जैविक पोषण, मिट्टी सुधार)।</li>`;
+  html += `<li>वर्मी-कम्पोस्ट: ~${vermi_t_per_ha} t/ha (जब उपलब्ध हो)।</li>`;
+  html += `<li>नीम केक: ~${neemcake_kg_per_ha} kg/ha (N स्रोत + कीटरोधी गुण)।</li>`;
+  html += `<li>यदि आप आधा RDF जैविक स्रोतों से देना चाहें तो: 50% RDF (रासायनिक) + 50% FYM/Vermi + बायोफर्टिलाइज़र (Rhizobium, PSB) एक सुरक्षित तरीका है।</li>`;
+  html += `</ul></div>`;
+
+  // If forecast short summary
+  if(forecast && forecast.list && forecast.list.length){
+    const soon = forecast.list.slice(0,8);
+    const nowWeather = soon[0] && soon[0].weather && soon[0].weather[0] ? soon[0].weather[0].description : '';
+    html += `<div class="small-note" style="margin-top:8px">ताज़ा मौसम (अगले ~24 घंटे): ${nowWeather || '—'}</div>`;
+  }
+
+  // Show formulas & conversion notes
+  html += `<div class="muted-block"><strong>कैसे गणना की गई:</strong> हमने N, P₂O₅ और K₂O (kg/ha) × क्षेत्र (ha) करके कुल पोषक निकाले।</div>`;
+  html += `<div class="small-note">उर्वरक रूपांतरण मानक: DAP ≈ 46% P₂O₅ और ≈18% N; Urea ≈ 46% N; MOP ≈ 60% K₂O. (उदाहरण के लिए, DAP kg = P₂O₅_कुल / 0.46)।</div>`;
+
+  showResult(html);
+
+  // Speak short summary
+  let speakMsg = `${cropName} के लिए कुल N ${Math.round(totalN)} किलो, P ${Math.round(totalP)} किलो और K ${Math.round(totalK)} किलो की आवश्यकता है। अनुमानित DAP ${Math.round(dapKg)} किलो, यूरिया ${Math.round(ureaKg)} किलो और MOP ${Math.round(mopKg)} किलो। ${adviceText}`;
+  speakHindi(speakMsg);
+}
+
+/* ---------------- Simple TTS and voice code (kept from original) ---------------- */
+let speechUtterance = null;
+let speechPaused = false;
+function speakHindi(text){
+  if(!('speechSynthesis' in window)){ console.warn('TTS unsupported'); return; }
+  if(speechSynthesis.speaking){ speechSynthesis.cancel(); }
+  speechUtterance = new SpeechSynthesisUtterance(text);
+  speechUtterance.lang = 'hi-IN';
+  const voices = speechSynthesis.getVoices();
+  const hiVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('hi')) ||
+                  voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en-in')) ||
+                  voices[0];
+  if(hiVoice) speechUtterance.voice = hiVoice;
+  speechSynthesis.speak(speechUtterance);
+  speechPaused = false;
+}
+function toggleSpeech(){
+  if(!('speechSynthesis' in window)) return;
+  if(speechSynthesis.speaking){
+    if(!speechPaused){
+      speechSynthesis.pause(); speechPaused = true; document.getElementById('pauseBtn').innerText = '▶️ Resume';
+    } else {
+      speechSynthesis.resume(); speechPaused = false; document.getElementById('pauseBtn').innerText = '⏸️ Pause';
+    }
+  }
+}
+
+/* ---------------- Voice recognition (kept and adapted) ---------------- */
+let recognizer = null;
+let listening = false;
+function toggleListening(){
+  if(listening){ stopListening(); return; }
+  startListening();
+}
+function stopListening(){
+  if(recognizer){
+    recognizer.stop();
+    recognizer = null;
+  }
+  const mic = el('micBtn'); mic.classList.remove('listening'); listening = false;
+}
+function startListening(){
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    alert('यह ब्राउज़र speech recognition समर्थन नहीं करता। कृपया Chrome ब्राउज़र उपयोग करें।');
+    return;
+  }
+  const mic = el('micBtn'); mic.classList.add('listening');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognizer = new SpeechRecognition();
+  recognizer.lang = 'hi-IN';
+  recognizer.interimResults = false;
+  recognizer.maxAlternatives = 1;
+  listening = true;
+  recognizer.start();
+
+  recognizer.onresult = (evt) => {
+    const text = evt.results[0][0].transcript;
+    mic.classList.remove('listening'); listening = false;
+    showResult(`<div class="muted">आपने कहा: ${text}</div>`);
+    parseVoiceText(text);
+  };
+
+  recognizer.onerror = (ev) => {
+    const mic = el('micBtn'); mic.classList.remove('listening'); listening = false;
+    const err = ev.error || 'unknown';
+    showResult(`<div class="warn">वॉइस इनपुट में त्रुटि: ${err}</div>`);
+    speakHindi('माफ कीजिए, मैं समझ नहीं पाया। कृपया दोबारा बोलें या मैन्युअल रूप से इनपुट करें।');
+  };
+  recognizer.onend = () => { const mic = el('micBtn'); mic.classList.remove('listening'); listening = false; };
+}
+
+/* Very simple parser — improved to detect state/crop/area */
+function parseVoiceText(text){
+  text = text.toLowerCase();
+  const numMatch = text.match(/(\d+(\.\d+)?)/);
+  if(numMatch){ el('area').value = numMatch[1]; }
+
+  // detect units
+  if(text.includes('एकड़') || text.includes('एकड')) el('unit').value = 'acre';
+  else if(text.includes('हेक्टेयर')) el('unit').value = 'hectare';
+  else if(text.includes('बीघा') || text.includes('बिघा')) {
+    if(text.includes('पंजाब') || text.includes('पंजाबी')) el('unit').value = 'bigha_punjab';
+    else if(text.includes('उप्र') || text.includes('यूपी')) el('unit').value = 'bigha_up';
+    else el('unit').value = 'bigha_punjab';
+  } else if(text.includes('नाली') || text.includes('नल')) el('unit').value = 'nali';
+
+  // detect state names (simple heuristics)
+  const stateMap = {
+    'उत्तर प्रदेश':'uttar_pradesh','महाराष्ट्र':'maharashtra','बिहार':'bihar','पश्चिम बंगाल':'west_bengal','मध्य प्रदेश':'madhya_pradesh',
+    'तमिलनाडु':'tamil_nadu','तमिल नाडु':'tamil_nadu','कर्नाटक':'karnataka','गुजरात':'gujarat','राजस्थान':'rajasthan',
+    'आंध्र प्रदेश':'andhra_pradesh','ओडिशा':'odisha','तेलंगाना':'telangana','असम':'assam','पंजाब':'punjab',
+    'हरियाणा':'haryana','केरल':'kerala','जम्मू':'jammu_kashmir','उत्तराखंड':'uttarakhand','झारखंड':'jharkhand',
+    'छत्तीसगढ़':'chhattisgarh','हिमाचल':'himachal_pradesh','गोवा':'goa','मणिपुर':'manipur','मेघालय':'meghalaya','मिजोरम':'mizoram',
+    'नागालैंड':'nagaland','त्रिपुरा':'tripura','सिक्किम':'sikkim'
+  };
+  Object.keys(stateMap).forEach(n=>{
+    if(text.includes(n.toLowerCase())){
+      el('state').value = stateMap[n];
+      // trigger crop population
+      stateSelect.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // detect crop names (search through RATES_PER_HA names)
+  const cropKeys = Object.keys(RATES_PER_HA);
+  for(const k of cropKeys){
+    const name = RATES_PER_HA[k].name.toLowerCase();
+    if(text.includes(name) || text.includes(k)) {
+      el('crop').value = k;
+      break;
+    }
+  }
+
+  // try to detect location (last token heuristic)
+  const words = text.split(/\s+/).filter(Boolean);
+  if(words.length){
+    const last = words[words.length -1];
+    if(!/^\d+(\.\d+)?$/.test(last)){
+      const excluded = ['एकड़','हेक्टेयर','बीघा','नाली','के','का','की','में','लिए','और'];
+      if(!excluded.includes(last)) el('location').value = capitalize(last);
+    }
+  }
+
+  setTimeout(()=> calculateAndAdvise(), 900);
+}
+
+function capitalize(s){ return s && s.length ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+
+/* Helper get label */
+function getUnitLabel(unit){
+  const map = {
+    acre: "एकड़",
+    hectare: "हेक्टेयर",
+    bigha_punjab: "बीघा (Punjab)",
+    bigha_up: "बीघा (UP)",
+    nali: "नाली",
+    other: "यूनिट"
+  };
+  return map[unit] || unit;
+}
+
+/* ensure voices loaded */
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = ()=>{ /* noop */ };
+}
+
+customFactorInput.placeholder = "उदाहरण: 0.625 (1 bigha = 0.625 acre)";
+</script>
+</body>
+</html>

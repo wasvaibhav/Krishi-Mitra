@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up – FRIENBIE</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+  body {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    margin-top: 90px;
+    font-size: 40px;
+    text-align: center;
+    color: #00f2fe;
+  }
+
+  form {
+    margin-top: 30px;
+    width: 90%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* equal spacing between all fields */
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #f5f7fa;
+    color: #111;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
+    outline: none;
+  }
+
+  .input-group {
+    position: relative;
+    width: 100%;
+  }
+
+  .input-group input {
+    padding-right: 45px; /* space for the 👁️ button */
+  }
+
+  .input-group button {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #0072ff;
+  }
+
+  button[type="submit"] {
+  display: block;         /* ensures it behaves like input */
+  width: 107%;            /* same width as inputs */
+  box-sizing: border-box; /* includes padding inside width */
+  padding: 14px;
+  font-size: 17px;
+  font-weight: bold;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin: 0;              /* reset margins */
+}
+
+  button[type="submit"]:hover {
+    transform: scale(1.03);
+  }
+
+  #status {
+    margin-top: 14px;
+    font-size: 25px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .link {
+    margin-top: 22px;
+    font-size: 15px;
+    color: #ffffff;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    h2 { font-size: 26px; }
+    input, button { font-size: 16px; padding: 13px; }
+  }
+</style>
+</head>
+<body>
+  <h2>Create your FRIENBIE Account</h2>
+  <form id="signupForm">
+    <input type="email" id="email" placeholder="Email" required style="margin-bottom: 16px;" />
+    <div style="position: relative; width: 90%; max-width: 380px; margin-bottom: 16px;">
+      <input type="password" id="password" placeholder="Password (min 6 chars)" required 
+             style="width: 100%; padding: 14px 50px 14px 14px;" />
+      <button type="button" id="togglePassword"
+              style="position: absolute; top: 50%; right: -50px; transform: translateY(-50%);
+                     background: none; border: none; cursor: pointer; font-size: 16px; color: #0072ff;">
+        👁️
+      </button>
+    </div>
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p id="status"></p>
+  <a href="2-login.html" class="link">Already have an account? Login</a>
+
+  <script type="module">
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = 'A3C51414-B8C7-4B35-AD22-B314D99D07F8';
+
+    // 🔗 Firebase Core
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import {
+      getAuth, createUserWithEmailAndPassword,
+      setPersistence, browserLocalPersistence
+    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { initializeAppCheck, ReCaptchaV3Provider } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+            apiKey: "AIzaSyAbDhvzBo_clGSX4DMbC8RdW95WxyAj6r4",
+            authDomain: "krishimitra-c611a.firebaseapp.com",
+            projectId: "krishimitra-c611a",
+            storageBucket: "krishimitra-c611a.firebasestorage.app",
+            messagingSenderId: "825498844234",
+            appId: "1:825498844234:web:897c1d73a9f7b235d37ab3",
+            measurementId: "G-0GYKDSKDG9"
+        };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LdZs3UrAAAAAB5ZWcCwPjNke-j-aqFPZiXfSSVT'),
+    isTokenAutoRefreshEnabled: true
+  });
+  
+
+    const form = document.getElementById('signupForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      status.textContent = '⏳ Creating account…';
+      status.style.color = 'white';
+
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
+
+        // ✅ Firestore Profile
+        await setDoc(doc(db, 'users', uid), {
+          email,
+          displayName: "Anonymous",
+          avatar: "assets/avatars/avatar1.jpg",
+          level: 1,
+          xp: 0,
+          streak: 0,
+          lastVisit: new Date().toDateString(),
+          createdAt: serverTimestamp()
+        });
+
+        status.textContent = '✅ Sign-up successful! Redirecting…';
+        status.style.color = 'lightgreen';
+        setTimeout(() => {
+          location.href = 'home.html';
+        }, 1200);
+      } catch (err) {
+        console.error('Signup error:', err);
+        status.textContent = '❌ ' + (err.message || 'Something went wrong.');
+        status.style.color = 'yellow';
+      }
+    });
+
+    // 👁️ Toggle Password
+    const pwInput = document.getElementById('password');
+    const pwToggle = document.getElementById('togglePassword');
+    pwToggle.addEventListener('click', () => {
+      const vis = pwInput.type === 'text';
+      pwInput.type = vis ? 'password' : 'text';
+      pwToggle.textContent = vis ? '👁️' : '🙈';
+    });
+  </script>
+</body>
+</html>

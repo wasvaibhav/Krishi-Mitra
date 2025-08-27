@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Krishi Mitra - AI Farmer Advisory</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #eef7ed; color: #1b3a2a; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    header { background: linear-gradient(90deg, #1b5e20, #2e7d32); color: white; padding: 15px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+    .header-content { display:flex; justify-content:space-between; align-items:center; gap: 12px; }
+    .logo { display:flex; align-items:center; gap:10px; }
+    .logo i { font-size:28px; }
+    .logo h1 { font-size:22px; }
+    nav ul { display:flex; list-style:none; gap:18px; }
+    nav a { color: white; text-decoration:none; font-weight:600; padding:6px 10px; border-radius:6px; }
+    nav a:hover { background: rgba(255,255,255,0.08); }
+    .language-selector { display:flex; align-items:center; gap:10px; }
+    select { padding:8px; border-radius:6px; border:none; }
+    .hero { background: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&h=500&q=80') no-repeat center center/cover; height:420px; display:flex; align-items:center; color:white; text-shadow:1px 1px 4px rgba(0,0,0,0.6); margin:30px 0; border-radius:10px; overflow:hidden; }
+    .hero-content { background: rgba(20,80,34,0.82); padding:32px; max-width:680px; border-radius:0 10px 10px 0; }
+    .hero h2 { font-size:34px; margin-bottom:12px; }
+    .hero p { font-size:18px; margin-bottom:18px; }
+    .btn { display:inline-block; background:#ff9800; color:white; padding:12px 22px; border:none; border-radius:8px; cursor:pointer; font-weight:700; text-decoration:none; }
+    .btn:hover { background:#f57c00; }
+    .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; margin:30px 0; }
+    .feature-card { background:white; border-radius:10px; overflow:hidden; box-shadow:0 6px 14px rgba(0,0,0,0.06); cursor:pointer; transition:transform .18s ease; position:relative; text-align:center; }
+    .feature-card:hover { transform:translateY(-6px); }
+    .feature-icon { background:#2e7d32; color:white; font-size:22px; padding:18px; text-align:center; }
+    .feature-content { padding:14px; }
+    .feature-content h3 { color:#165b20; margin:0; font-size:16px; }
+    .tooltip { visibility:hidden; opacity:0; background:#333; color:#fff; text-align:center; border-radius:6px; padding:6px 10px; position:absolute; bottom:110%; left:50%; transform:translateX(-50%); transition:opacity 0.2s; width:200px; font-size:13px; z-index:1; }
+    .feature-card:hover .tooltip { visibility:visible; opacity:1; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:9999; }
+    .modal { background:white; width:90%; max-width:720px; border-radius:12px; padding:20px; box-shadow:0 12px 30px rgba(0,0,0,0.18); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .modal-header h3 { margin:0; }
+    .close-btn { background:#ef5350; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    footer { background:#1b5e20; color:white; padding:26px 0; margin-top:40px; text-align:center; }
+    .footer-links { display:flex; justify-content:center; gap:18px; margin:10px 0; }
+    .footer-links a { color:white; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function Modal({ visible, onClose, title, children }){
+      if(!visible) return null;
+      return (
+        <div className="modal-overlay" onClick={onClose}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{title}</h3>
+              <button className="close-btn" onClick={onClose}><i className="fas fa-times"></i></button>
+            </div>
+            <div style={{marginTop:12}}>{children}</div>
+          </div>
+        </div>
+      );
+    }
+
+    function App(){
+      const [language, setLanguage] = useState('en');
+      const [modalData, setModalData] = useState(null);
+      const [weather, setWeather] = useState(null);
+
+      const languages = [
+        { code: 'en', name: 'English' },
+        { code: 'hi', name: 'हिन्दी' }
+      ];
+
+      const features = [
+        {
+          id: 'crop-advisory', icon: 'fas fa-seedling',
+          title: { en: 'Crop Advisory', hi: 'फसल परामर्श' },
+          short: { en: 'AI crop selection & timings', hi: 'फसल चयन व समय सलाह' },
+          long: { en: 'Personalized crop recommendations based on soil, weather, and markets.', hi: 'मिट्टी, मौसम और बाजार के आधार पर व्यक्तिगत फसल सलाह।' }
+        },
+        {
+          id: 'pest-detection', icon: 'fas fa-bug',
+          title: { en: 'Pest Help', hi: 'कीट पहचान' },
+          short: { en: 'Upload photo for remedies', hi: 'फोटो अपलोड कर उपचार पाएं' },
+          long: { en: 'Upload crop photos to identify pest/disease & get treatment.', hi: 'फसल की तस्वीरें अपलोड करें और उपचार पाएं।' }
+        },
+        {
+          id: 'weather-alerts', icon: 'fas fa-cloud-sun-rain',
+          title: { en: 'Weather Alerts', hi: 'मौसम सूचना' },
+          short: { en: 'Local forecasts & warnings', hi: 'स्थानीय पूर्वानुमान व चेतावनी' },
+          long: { en: weather ? 
+            `${weather.name}: ${weather.main.temp}°C, ${weather.weather[0].description}` : 
+            'Fetching your local weather...' ,
+            hi: weather ?
+            `${weather.name}: ${weather.main.temp}°C, ${weather.weather[0].description}` :
+            'स्थानीय मौसम डेटा लोड हो रहा है...' }
+        },
+        {
+          id: 'soil-health', icon: 'fas fa-flask',
+          title: { en: 'Soil Health', hi: 'मिट्टी स्वास्थ्य' },
+          short: { en: 'Fertilizer advice by soil test', hi: 'मिट्टी परीक्षण अनुसार उर्वरक' },
+          long: { en: 'Nutrient guidance using soil test data.', hi: 'मिट्टी परीक्षण डेटा से पोषण मार्गदर्शन।' }
+        },
+        {
+          id: 'market-prices', icon: 'fas fa-rupee-sign',
+          title: { en: 'Market Prices', hi: 'बाज़ार भाव' },
+          short: { en: 'Track mandi prices', hi: 'मंडी भाव देखें' },
+          long: { en: 'Compare mandi prices & get best selling time.', hi: 'मंडी भाव तुलना करें और विक्री समय पाएं।' }
+        }
+      ];
+
+      const t = {
+        en: { features: 'Key Features', getStarted: 'Get Started' },
+        hi: { features: 'मुख्य फ़ीचर', getStarted: 'शुरू करें' }
+      };
+
+      // Fetch weather from OpenWeather
+      useEffect(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            try {
+              const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=4f64d2ccccb781c20c8cf78bef334ff3&units=metric`);
+              const data = await res.json();
+              setWeather(data);
+            } catch (err) {
+              console.error("Weather fetch error:", err);
+            }
+          });
+        }
+      }, []);
+
+      return (
+        <div>
+          <header>
+            <div className="container header-content">
+              <div className="logo"><i className="fas fa-leaf"></i><h1>Krishi Mitra</h1></div>
+              <nav>
+                <ul><li><a href="#features">{t[language].features}</a></li></ul>
+              </nav>
+              <div className="language-selector">
+                <span style={{color:'white'}}>{language==='en'?'Language:':'भाषा:'}</span>
+                <select value={language} onChange={e => setLanguage(e.target.value)}>
+                  {languages.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
+                </select>
+              </div>
+            </div>
+          </header>
+
+          <div className="container">
+            <div className="hero">
+              <div className="hero-content">
+                <h2>{language==='en'?'AI-Powered Farming Advisory':'AI-आधारित कृषि सलाह'}</h2>
+                <p>{language==='en'?'Get personalized, real-time advice for your crops.':'अपनी फसलों के लिए व्यक्तिगत, वास्तविक समय सलाह पाएं।'}</p>
+                <a href="hehe.html" className="btn">{t[language].getStarted}</a>
+              </div>
+            </div>
+
+            <h2 id="features" style={{textAlign:'center', marginBottom:18, color:'#1b5e20'}}>{t[language].features}</h2>
+            <div className="features">
+              {features.map(f => (
+                <div key={f.id} className="feature-card" onClick={() => setModalData({title: f.title[language], content: f.long[language]})}>
+                  <div className="feature-icon"><i className={f.icon}></i></div>
+                  <div className="feature-content">
+                    <h3>{f.title[language]}</h3>
+                  </div>
+                  <div className="tooltip">{f.short[language]}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Modal visible={!!modalData} onClose={() => setModalData(null)} title={modalData?.title}>
+            <div>{modalData?.content}</div>
+          </Modal>
+
+          <footer>
+            <div className="container">
+              <div style={{display:'flex',gap:10,alignItems:'center',justifyContent:'center'}}>
+                <i className="fas fa-leaf"></i><h2 style={{margin:0}}>Krishi Mitra</h2>
+              </div>
+              <p style={{marginTop:10}}>{language==='en'?'Empowering farmers with AI-based advisory services':'कृषि सलाह के साथ किसानों को सशक्त बनाना'}</p>
+              <div className="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms</a>
+                <a href="#help">Help</a>
+              </div>
+              <p style={{marginTop:8}}>© 2025 Krishi Mitra</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+  <script id="omnidimension-web-widget" 
+  async 
+  src="https://backend.omnidim.io/web_widget.js?secret_key=695298321c27acfd2c79f6be8bd06179">
+</script>
+</body>
+</html>

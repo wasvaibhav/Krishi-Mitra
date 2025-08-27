@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMitra - Sign Up</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background-color: #f8faf8;
+            color: #333;
+            line-height: 1.6;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                              url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23428a34' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
+        header { text-align: center; padding: 20px 0; }
+        .logo { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+        .logo-icon { font-size: 2.5rem; color: #4caf50; margin-right: 10px; }
+        .logo-text { font-size: 2.2rem; font-weight: bold; color: #2e7d32; }
+        .tagline { color: #558b2f; font-style: italic; margin-bottom: 30px; }
+        .content { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 40px; }
+        .illustration { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .illustration-content { width: 100%; max-width: 400px; background-color: #e8f5e9; border-radius: 10px; padding: 30px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        .illustration-title { color: #2e7d32; margin-bottom: 20px; text-align: center; font-size: 1.5rem; }
+        .benefits-list { list-style-type: none; }
+        .benefits-list li { padding: 10px 0; border-bottom: 1px dashed #c8e6c9; display: flex; align-items: center; }
+        .benefits-list li:before { content: "🌱"; margin-right: 10px; font-size: 1.2rem; }
+        .form-container { flex: 1; max-width: 450px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); }
+        .form-title { text-align: center; margin-bottom: 20px; color: #2e7d32; font-size: 1.8rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #388e3c; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #c8e6c9; border-radius: 6px; font-size: 16px; transition: border-color 0.3s; }
+        .form-control:focus { outline: none; border-color: #4caf50; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
+        .farm-type { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .farm-type-option { flex: 1; min-width: 120px; }
+        .farm-type-option input[type="radio"] { display: none; }
+        .farm-type-option label { display: block; padding: 10px; text-align: center; background-color: #e8f5e9; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; }
+        .farm-type-option input[type="radio"]:checked + label { background-color: #4caf50; color: white; }
+        .btn { display: block; width: 100%; padding: 14px; background-color: #4caf50; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.3s; }
+        .btn:hover { background-color: #388e3c; }
+        .login-link { text-align: center; margin-top: 20px; color: #666; }
+        .login-link a { color: #4caf50; text-decoration: none; font-weight: 600; }
+        .login-link a:hover { text-decoration: underline; }
+        footer { text-align: center; padding: 20px 0; color: #666; margin-top: 40px; }
+        @media (max-width: 900px) { .content { flex-direction: column; } .illustration, .form-container { width: 100%; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">🌾</div>
+                <div class="logo-text">KrishiMitra</div>
+            </div>
+            <p class="tagline">Join our community of sustainable farmers</p>
+        </header>
+        
+        <div class="content">
+            <div class="illustration">
+                <div class="illustration-content">
+                    <h3 class="illustration-title">Why Join KrishiMitra?</h3>
+                    <ul class="benefits-list">
+                        <li>Access to premium farming resources</li>
+                        <li>Connect with local markets and buyers</li>
+                        <li>Get the latest farming techniques and tips</li>
+                        <li>Weather alerts and crop advisory</li>
+                        <li>Community support and knowledge sharing</li>
+                        <li>Special discounts on farming equipment</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <h2 class="form-title">Create Your Account</h2>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="fullname">Full Name</label>
+                        <input type="text" id="fullname" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                       
+                        <div class="farm-type">
+                            <div class="farm-type-option">
+                                <input type="radio" id="crops" name="farm-type" value="Crops" checked>
+                               
+                            </div>
+                            <div class="farm-type-option">
+                                <input type="radio" id="livestock" name="farm-type" value="Livestock">
+                                
+                            </div>
+                            <div class="farm-type-option">
+                                <input type="radio" id="dairy" name="farm-type" value="Dairy">
+                                
+                            </div>
+                            <div class="farm-type-option">
+                                <input type="radio" id="mixed" name="farm-type" value="Mixed">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">Farming Experience</label>
+                        <select id="experience" class="form-control" required>
+                            <option value="">Select your experience level</option>
+                            <option value="Beginner">Beginner (0-2 years)</option>
+                            <option value="Intermediate">Intermediate (3-5 years)</option>
+                            <option value="Experienced">Experienced (6-10 years)</option>
+                            <option value="Expert">Expert (10+ years)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
+                    </div>
+                    
+                    <button type="submit" class="btn">Create Account</button>
+                    
+                    <div class="login-link">
+                        Already have an account? <a href="#" id="login-link">Log In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 FarmFresh. All rights reserved. | Sustainable Farming for a Better Tomorrow</p>
+        </footer>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAbDhvzBo_clGSX4DMbC8RdW95WxyAj6r4",
+    authDomain: "krishimitra-c611a.firebaseapp.com",
+    projectId: "krishimitra-c611a",
+    storageBucket: "krishimitra-c611a.firebasestorage.app",
+    messagingSenderId: "825498844234",
+    appId: "1:825498844234:web:897c1d73a9f7b235d37ab3",
+    measurementId: "G-0GYKDSKDG9"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Redirect to login
+  document.getElementById('login-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = "login.html";
+  });
+
+  // Signup handler
+  document.getElementById('signup-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const fullname = document.getElementById('fullname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const farmType = document.querySelector('input[name="farm-type"]:checked')?.value || "";
+    const experience = document.getElementById('experience').value;
+
+    if (!fullname || !email || !password) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      // ✅ Create user in Firebase Authentication
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      const uid = cred.user.uid;
+
+      // ✅ Save profile data in Firestore (without password)
+      await db.collection('users').doc(uid).set({
+        fullname,
+        email,
+        farmType,
+        experience,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Signup successful! Redirecting to homepage...');
+      window.location.href = "home.html";
+
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Error: " + error.message);
+    }
+  });
+</script>
+</body>
+</html>
